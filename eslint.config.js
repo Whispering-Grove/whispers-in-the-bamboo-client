@@ -21,6 +21,12 @@ export default tseslint.config(
       prettier,
     },
     rules: {
+      // 1) 기본 ESLint no-unused-vars 끄기
+      'no-unused-vars': 'off',
+
+      // 2) TypeScript 전용 룰은 경고(warn)로
+      '@typescript-eslint/no-unused-vars': 'warn',
+
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'prettier/prettier': 'error',
