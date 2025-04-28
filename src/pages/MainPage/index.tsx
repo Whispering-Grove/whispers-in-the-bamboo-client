@@ -22,7 +22,7 @@ const mockupUser: UserPosition[] = [
   },
 ]
 
-const Main = () => {
+export const MainPage = () => {
   const [messages, setMessages] = useState<{ user: string; message: string }[]>([])
   const [user, setUser] = useState('')
   const [message, setMessage] = useState('')
@@ -61,7 +61,16 @@ const Main = () => {
         return // 좌우 키 이외에는 무시
       }
 
-      setPositions((prevPositions) => prevPositions.map((user) => (user.id === myId ? { ...user, x: newX } : user)))
+      setPositions((prevPositions) =>
+        prevPositions.map((user) =>
+          user.id === myId
+            ? {
+                ...user,
+                x: newX,
+              }
+            : user,
+        ),
+      )
 
       // socket.send(JSON.stringify({ type: 'move', payload: { id: myId, x: newX } }))
     }
@@ -158,5 +167,3 @@ const Main = () => {
     </div>
   )
 }
-
-export default Main

@@ -1,10 +1,9 @@
 import { createRoot } from 'react-dom/client'
-import App from './App'
-import { GlobalStyle } from './assets/styles/GlobalStyle.tsx'
+import { App } from '@app/App.tsx'
+import { StrictMode } from 'react'
 
-createRoot(document.getElementById('root')!).render(
-  <>
-    <GlobalStyle />
+createRoot(document.getElementById('root') as HTMLDivElement).render(
+  <StrictMode>
     <App />
-  </>,
+  </StrictMode>,
 )

@@ -1,4 +1,4 @@
-import { css } from "@emotion/react";
+import { css } from '@emotion/react'
 
 export const disableUserDrag = css`
   -webkit-user-drag: none;
@@ -6,7 +6,7 @@ export const disableUserDrag = css`
   -moz-user-drag: none;
   -o-user-drag: none;
   user-drag: none;
-`;
+`
 
 export const ellipsis = css`
   overflow: hidden;
@@ -14,4 +14,4 @@ export const ellipsis = css`
   text-overflow: ellipsis;
   display: block;
   width: 100%;
-`;
+`
