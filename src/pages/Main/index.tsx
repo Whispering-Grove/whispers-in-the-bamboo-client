@@ -1,9 +1,77 @@
 import { useEffect, useState } from 'react'
 
+// const socket = new WebSocket('ws://yourserveraddress:port')
+
+type UserPosition = {
+  id: string
+  x: number
+}
+
+const mockupUser: UserPosition[] = [
+  {
+    id: 'USER-01',
+    x: 10,
+  },
+  {
+    id: 'USER-02',
+    x: -55,
+  },
+  {
+    id: 'USER-03',
+    x: 180,
+  },
+]
+
 const Main = () => {
   const [messages, setMessages] = useState<{ user: string; message: string }[]>([])
   const [user, setUser] = useState('')
   const [message, setMessage] = useState('')
+
+  const [positions, setPositions] = useState<UserPosition[]>(mockupUser)
+  const [myId, setMyId] = useState<string>('USER-01')
+
+  useEffect(() => {
+    // socket.onopen = () => {
+    //   console.log('WebSocket connected')
+    // }
+    //
+    // socket.onmessage = (event) => {
+    //   const data = JSON.parse(event.data)
+    //   if (data.type === 'update-positions') {
+    //     setPositions(data.payload)
+    //   } else if (data.type === 'assign-id') {
+    //     setMyId(data.payload.id)
+    //   }
+    // }
+    // setPositions(data.payload)
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const myPosition = positions.find((p) => p.id === myId)
+      if (!myPosition) return
+
+      let newX = myPosition.x
+
+      if (e.key === 'ArrowLeft') {
+        newX -= 10
+      } else if (e.key === 'ArrowRight') {
+        newX += 10
+      } else {
+        return // 좌우 키 이외에는 무시
+      }
+
+      setPositions((prevPositions) => prevPositions.map((user) => (user.id === myId ? { ...user, x: newX } : user)))
+
+      // socket.send(JSON.stringify({ type: 'move', payload: { id: myId, x: newX } }))
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [positions, myId])
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -61,6 +129,32 @@ const Main = () => {
           </li>
         ))}
       </ul>
+
+      <div style={{ position: 'relative' }}>
+        {positions.map((user) => (
+          <div
+            key={user.id}
+            style={{
+              position: 'absolute',
+              display: 'flex',
+              left: `${400 + user.x}px`,
+              top: '180px',
+              width: '40px',
+              height: '40px',
+              backgroundColor: user.id === myId ? 'blue' : 'gray',
+              borderRadius: '50%',
+              textAlign: 'center',
+              lineHeight: '40px',
+              color: '#fff',
+              transition: 'ease-out',
+              flexDirection: 'column',
+            }}
+          >
+            <span>{user.x}</span>
+            <span style={{ fontSize: '12px' }}>{user.id}</span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
