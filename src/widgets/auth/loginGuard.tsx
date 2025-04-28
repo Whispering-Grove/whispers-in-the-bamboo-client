@@ -1,18 +1,18 @@
 import { PropsWithChildren } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
-import { useAuth } from '@features/auth/useAuth.ts'
 import { Paths } from '@shared/config/Paths.ts'
+import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
 
 export const LoginGuard = ({ children }: PropsWithChildren) => {
-  const { isAuthenticated } = useAuth()
+  const { user } = useAuthStore()
   const { pathname } = useLocation()
 
-  if (!isAuthenticated && pathname === Paths.main) {
-    return <Navigate to="/login" state={{ from: pathname }} replace />
+  if (!user?.id && pathname === Paths.main) {
+    return <Navigate to="/login" replace />
   }
 
-  if (isAuthenticated && pathname === Paths.login) {
-    return <Navigate to="/" state={{ from: pathname }} replace />
+  if (user?.id && pathname === Paths.login) {
+    return <Navigate to="/" replace />
   }
 
   return <>{children}</>
