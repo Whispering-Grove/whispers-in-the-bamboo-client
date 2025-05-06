@@ -9,10 +9,5 @@ export const Container = styled.div`
 `
 
 export const ContentWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
   flex: 1;
-  box-shadow: 0 4px 20px ${({ theme }) => theme.colors.gray.opacity10};
-  border-radius: 10px;
-  overflow: hidden;
 `

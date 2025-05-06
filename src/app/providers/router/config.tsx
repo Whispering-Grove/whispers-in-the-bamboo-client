@@ -1,6 +1,6 @@
 import { RouteObject } from 'react-router-dom'
-import { MainPage } from '@pages/MainPage'
-import { LoginPage } from '@pages/LoginPage'
+import { Main } from 'src/pages/Main'
+import { Login } from 'src/pages/Login'
 import { Paths } from '@shared/config/Paths.ts'
 import { LoginGuard } from '@widgets/auth/loginGuard.tsx'
 
@@ -9,7 +9,7 @@ export const routerConfig: RouteObject[] = [
     path: Paths.login,
     element: (
       <LoginGuard>
-        <LoginPage />
+        <Login />
       </LoginGuard>
     ),
   },
@@ -17,7 +17,7 @@ export const routerConfig: RouteObject[] = [
     path: Paths.main,
     element: (
       <LoginGuard>
-        <MainPage />
+        <Main />
       </LoginGuard>
     ),
   },

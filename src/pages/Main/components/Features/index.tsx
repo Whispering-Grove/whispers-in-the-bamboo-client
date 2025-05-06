@@ -3,32 +3,33 @@ import { useEffect, useState } from 'react'
 
 export const Features = () => {
   const [messages, setMessages] = useState<{ user: string; message: string }[]>([])
-  const [user, setUser] = useState('')
-  const [message, setMessage] = useState('')
 
-  const handleSendMessage = async () => {
-    if (!user || !message) {
-      alert('사용자명과 메시지를 모두 입력해주세요.')
-      return
-    }
+  // const [user, setUser] = useState('')
+  // const [message, setMessage] = useState('')
 
-    try {
-      await fetch('http://localhost:3000/message', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user, message }),
-      })
-
-      const response = await fetch('http://localhost:3000/messages')
-      const data = await response.json()
-      setMessages(data)
-      setMessage('')
-    } catch (error) {
-      console.error('메시지 보내기 실패:', error)
-    }
-  }
+  // const handleSendMessage = async () => {
+  //   if (!user || !message) {
+  //     alert('사용자명과 메시지를 모두 입력해주세요.')
+  //     return
+  //   }
+  //
+  //   try {
+  //     await fetch('http://localhost:3000/message', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ user, message }),
+  //     })
+  //
+  //     const response = await fetch('http://localhost:3000/messages')
+  //     const data = await response.json()
+  //     setMessages(data)
+  //     setMessage('')
+  //   } catch (error) {
+  //     console.error('메시지 보내기 실패:', error)
+  //   }
+  // }
 
   // 메시지 로드
   useEffect(() => {
@@ -57,11 +58,11 @@ export const Features = () => {
         </S.Chats>
       </S.FeatureChat>
 
-      <S.FeatureMessage>
-        <input type="text" placeholder="사용자명" value={user} onChange={(e) => setUser(e.target.value)} />
-        <input type="text" placeholder="메시지 내용" value={message} onChange={(e) => setMessage(e.target.value)} />
-        <button onClick={handleSendMessage}>보내기</button>
-      </S.FeatureMessage>
+      {/*<S.FeatureMessage>*/}
+      {/*  <input type="text" placeholder="사용자명" value={user} onChange={(e) => setUser(e.target.value)} />*/}
+      {/*  <input type="text" placeholder="메시지 내용" value={message} onChange={(e) => setMessage(e.target.value)} />*/}
+      {/*  <button onClick={handleSendMessage}>보내기</button>*/}
+      {/*</S.FeatureMessage>*/}
 
       <S.FeatureController>
         <S.DeleteButton

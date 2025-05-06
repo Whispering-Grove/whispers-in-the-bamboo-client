@@ -1,8 +1,8 @@
-import * as S from '@pages/LoginPage/styles.ts'
+import * as S from '@pages/Login/styles.ts'
 import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
 import { useEffect, useId } from 'react'
 
-export const LoginPage = () => {
+export const Login = () => {
   const { login, isLoading, error } = useAuthStore()
   const id = useId()
 
