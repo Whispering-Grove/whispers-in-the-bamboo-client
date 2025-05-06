@@ -1,5 +1,5 @@
-import { Features } from '@pages/Main/components/Features'
-import { Zone } from '@pages/Main/components/Zone'
+import { Features } from 'src/pages/Main/Features'
+import { Zone } from 'src/pages/Main/Zone'
 
 export const Main = () => {
   return (
