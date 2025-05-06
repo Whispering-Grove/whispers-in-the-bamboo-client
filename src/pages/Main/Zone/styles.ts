@@ -3,7 +3,7 @@ import { css } from '@emotion/react'
 
 export const Character = styled.div<{ isMe: boolean; x: number }>`
   position: absolute;
-  width: 40px;
+  height: 70px;
   display: flex;
   bottom: 100px;
   left: ${({ x }) => x}px;
@@ -13,6 +13,11 @@ export const Character = styled.div<{ isMe: boolean; x: number }>`
   ${({ isMe }) =>
     isMe &&
     css`
-      border: 2px solid #fff;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 0 5px white);
+      }
     `}
 `
