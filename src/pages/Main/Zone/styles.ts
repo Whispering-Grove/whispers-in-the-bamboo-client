@@ -3,9 +3,9 @@ import { css } from '@emotion/react'
 
 export const Character = styled.div<{ isMe: boolean; x: number }>`
   position: absolute;
-  height: 70px;
+  height: 100px;
   display: flex;
-  bottom: 100px;
+  bottom: 50px;
   left: ${({ x }) => x}px;
   z-index: ${({ isMe }) => (isMe ? 1 : 0)};
   transition: left ${({ isMe }) => (isMe ? '.1s' : '.3s')} ease-out;

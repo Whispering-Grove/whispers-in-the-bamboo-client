@@ -4,16 +4,19 @@ import { GlobalStyle } from '@shared/assets/styles/GlobalStyle.tsx'
 import { RouterProvider } from '@app/providers/router/RouterProvider.tsx'
 import { Layout } from '@shared/ui/Layout'
 import { BrowserRouter } from 'react-router-dom'
+import { WebSocketProvider } from '../context/useWebSocket.tsx'
 
 export const App = () => {
   return (
     <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      <Layout>
-        <BrowserRouter>
-          <RouterProvider />
-        </BrowserRouter>
-      </Layout>
+      <WebSocketProvider>
+        <GlobalStyle />
+        <Layout>
+          <BrowserRouter>
+            <RouterProvider />
+          </BrowserRouter>
+        </Layout>
+      </WebSocketProvider>
     </ThemeProvider>
   )
 }

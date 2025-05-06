@@ -22,8 +22,11 @@ export const FeatureChat = styled.div`
   background-color: rgba(0, 0, 0, 0.2);
   padding: 12px 16px;
   border-radius: 6px;
+  min-width: 400px;
+  height: 88px;
 `
 export const Chats = styled.ul``
+
 export const Chat = styled.li`
   color: #fff;
   font-size: 14px;
@@ -37,4 +40,9 @@ export const DeleteButton = styled.button`
   cursor: pointer;
   font-size: 12px;
   font-weight: 700;
+  opacity: 0;
+
+  &:hover {
+    opacity: 1;
+  }
 `

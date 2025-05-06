@@ -1,11 +1,12 @@
 import { Features } from 'src/pages/Main/Features'
 import { Zone } from 'src/pages/Main/Zone'
+import * as S from './styles.ts'
 
 export const Main = () => {
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
+    <S.Container>
       <Features />
       <Zone />
-    </div>
+    </S.Container>
   )
 }

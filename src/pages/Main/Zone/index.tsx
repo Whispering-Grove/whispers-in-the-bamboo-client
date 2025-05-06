@@ -1,16 +1,13 @@
 import * as S from './styles.ts'
-import { use, useEffect, useRef, useState } from 'react'
-import { User } from '@pages/Main/interface.ts'
+import { useEffect, useState } from 'react'
+import { ChatBubble } from '@pages/Main/components/ChatBubble'
+import { useWebSocket } from '../../../context/useWebSocket.tsx'
+import { MESSAGE_LIMIT_LENGTH } from '../../../constants/limit.ts'
 
 export const Zone = () => {
-  const socketRef = useRef<WebSocket | null>(null)
-
-  const [users, setUsers] = useState<User[]>([])
-  const [myId, setMyId] = useState<string | null>(null)
+  const { socket, myId, users, sendMove, sendChat } = useWebSocket()
   const [localMyX, setLocalMyX] = useState(0)
-
   const [userChats, setUserChats] = useState<Record<string, string>>({})
-
   const [isChatting, setIsChatting] = useState(false)
   const [chatMessage, setChatMessage] = useState('')
 
@@ -32,7 +29,7 @@ export const Zone = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!myId || !socketRef.current) return
+      if (!myId || !socket || isChatting) return
 
       setLocalMyX((prevX) => {
         let newX = prevX
@@ -41,8 +38,8 @@ export const Zone = () => {
         else if (e.key === 'ArrowRight') newX += 5
         else return prevX
 
-        if (socketRef.current?.readyState === WebSocket.OPEN) {
-          socketRef.current.send(JSON.stringify({ type: 'move', payload: { id: myId, x: newX } }))
+        if (socket.readyState === WebSocket.OPEN) {
+          sendMove(newX)
         }
 
         return newX
@@ -51,29 +48,14 @@ export const Zone = () => {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [myId])
+  }, [myId, socket, sendMove])
 
   useEffect(() => {
-    console.log(userChats)
-  }, [userChats])
+    if (!socket) return
 
-  useEffect(() => {
-    const existingId = localStorage.getItem('userId')
-    const socket = new WebSocket(`ws://localhost:3000?userId=${existingId ?? ''}`)
-    socketRef.current = socket
-
-    socket.onopen = () => {
-      console.log('WebSocket connected')
-    }
-
-    socket.onmessage = (event) => {
+    const handleMessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data)
-      if (data.type === 'update-positions') {
-        setUsers(data.payload)
-      } else if (data.type === 'assign-id') {
-        setMyId(data.payload.id)
-        localStorage.setItem('userId', data.payload.id)
-      } else if (data.type === 'chat') {
+      if (data.type === 'chat') {
         const { id, message } = data.payload
         setUserChats((prev) => ({ ...prev, [id]: message }))
         setTimeout(() => {
@@ -86,13 +68,12 @@ export const Zone = () => {
       }
     }
 
-    return () => {
-      socket.close()
-    }
-  }, [])
+    socket.addEventListener('message', handleMessage)
+    return () => socket.removeEventListener('message', handleMessage)
+  }, [socket])
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: '#4e4949' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div>
         {users.map((user) => {
           const isMe = user.id === myId
@@ -100,37 +81,14 @@ export const Zone = () => {
           const hairImageUrl = `src/assets/images/hairs/${user.hair}.png`
 
           const handleKick = () => {
-            if (!isMe && socketRef.current?.readyState === WebSocket.OPEN) {
-              socketRef.current.send(JSON.stringify({ type: 'kick', payload: { id: user.id } }))
+            if (!isMe && socket?.readyState === WebSocket.OPEN) {
+              socket.send(JSON.stringify({ type: 'kick', payload: { id: user.id } }))
             }
           }
 
           return (
             <S.Character isMe={isMe} x={x} key={user.id} onClick={handleKick}>
-              {userChats[user.id] && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: '100px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    padding: '6px 10px',
-                    backgroundColor: 'white',
-                    color: 'black',
-                    borderRadius: '10px',
-                    fontSize: '14px',
-                    maxWidth: '200px',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
-                    zIndex: 10,
-                  }}
-                >
-                  {userChats[user.id]}
-                </div>
-              )}
-
+              {userChats[user.id] && <ChatBubble message={userChats[user.id]} />}
               <img
                 src={hairImageUrl}
                 alt={`${user.hair} hair`}
@@ -150,7 +108,7 @@ export const Zone = () => {
               left: 0,
               width: '100%',
               height: '100%',
-              backgroundColor: 'rgba(0,0,0,0.3)',
+              backgroundColor: 'rgba(0,0,0,0.4)',
               zIndex: 10,
             }}
             onClick={() => setIsChatting(false)}
@@ -160,23 +118,18 @@ export const Zone = () => {
             autoFocus
             value={chatMessage}
             onChange={(e) => {
-              if (e.target.value.length <= 30) setChatMessage(e.target.value)
+              if (e.target.value.length <= MESSAGE_LIMIT_LENGTH) setChatMessage(e.target.value)
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && chatMessage && myId) {
-                socketRef.current?.send(
-                  JSON.stringify({
-                    type: 'chat',
-                    payload: { id: myId, message: chatMessage },
-                  }),
-                )
+                sendChat(chatMessage)
                 setChatMessage('')
                 setIsChatting(false)
               }
             }}
             style={{
               position: 'absolute',
-              bottom: 100,
+              bottom: '50%',
               left: '50%',
               transform: 'translateX(-50%)',
               padding: '10px',

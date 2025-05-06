@@ -1,50 +1,29 @@
 import * as S from './styles.ts'
 import { useEffect, useState } from 'react'
+import { useWebSocket } from '../../../context/useWebSocket.tsx'
+import { DISPLAY_MESSAGE_LIMIT } from '../../../constants/limit.ts'
 
 export const Features = () => {
+  const { socket } = useWebSocket()
   const [messages, setMessages] = useState<{ user: string; message: string }[]>([])
 
-  // const [user, setUser] = useState('')
-  // const [message, setMessage] = useState('')
-
-  // const handleSendMessage = async () => {
-  //   if (!user || !message) {
-  //     alert('사용자명과 메시지를 모두 입력해주세요.')
-  //     return
-  //   }
-  //
-  //   try {
-  //     await fetch('http://localhost:3000/message', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({ user, message }),
-  //     })
-  //
-  //     const response = await fetch('http://localhost:3000/messages')
-  //     const data = await response.json()
-  //     setMessages(data)
-  //     setMessage('')
-  //   } catch (error) {
-  //     console.error('메시지 보내기 실패:', error)
-  //   }
-  // }
-
-  // 메시지 로드
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/messages')
-        const data = await response.json()
-        setMessages(data)
-      } catch (error) {
-        console.error('메시지 불러오기 실패:', error)
+    if (!socket) return
+
+    const handleMessage = (event: MessageEvent) => {
+      const data = JSON.parse(event.data)
+      if (data.type === 'chat') {
+        const { id, message } = data.payload
+        setMessages((prev) => {
+          const updated = [...prev, { user: id, message }]
+          return updated.slice(-DISPLAY_MESSAGE_LIMIT)
+        })
       }
     }
 
-    fetchMessages()
-  }, [])
+    socket.addEventListener('message', handleMessage)
+    return () => socket.removeEventListener('message', handleMessage)
+  }, [socket])
 
   return (
     <S.Features>
@@ -52,17 +31,11 @@ export const Features = () => {
         <S.Chats>
           {messages.map((msg, index) => (
             <S.Chat key={index}>
-              <strong>{msg.user}:</strong> {msg.message}
+              <strong>익명의 사용자:</strong> {msg.message}
             </S.Chat>
           ))}
         </S.Chats>
       </S.FeatureChat>
-
-      {/*<S.FeatureMessage>*/}
-      {/*  <input type="text" placeholder="사용자명" value={user} onChange={(e) => setUser(e.target.value)} />*/}
-      {/*  <input type="text" placeholder="메시지 내용" value={message} onChange={(e) => setMessage(e.target.value)} />*/}
-      {/*  <button onClick={handleSendMessage}>보내기</button>*/}
-      {/*</S.FeatureMessage>*/}
 
       <S.FeatureController>
         <S.DeleteButton
