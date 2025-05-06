@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import * as S from './styles.ts'
+import { Features } from '@pages/MainPage/components/Features'
 
 type UserPosition = {
   id: string
@@ -11,9 +13,6 @@ type UserPosition = {
 
 export const MainPage = () => {
   const socketRef = useRef<WebSocket | null>(null)
-  const [messages, setMessages] = useState<{ user: string; message: string }[]>([])
-  const [user, setUser] = useState('')
-  const [message, setMessage] = useState('')
 
   const [positions, setPositions] = useState<UserPosition[]>([])
   const [myId, setMyId] = useState<string | null>(null)
@@ -23,7 +22,8 @@ export const MainPage = () => {
 
   // WebSocket 연결
   useEffect(() => {
-    const socket = new WebSocket('ws://localhost:3000')
+    const existingId = localStorage.getItem('userId')
+    const socket = new WebSocket(`ws://localhost:3000?userId=${existingId ?? ''}`)
     socketRef.current = socket
 
     socket.onopen = () => {
@@ -36,6 +36,7 @@ export const MainPage = () => {
         setPositions(data.payload)
       } else if (data.type === 'assign-id') {
         setMyId(data.payload.id)
+        localStorage.setItem('userId', data.payload.id)
       }
     }
 
@@ -61,7 +62,6 @@ export const MainPage = () => {
       myPositionRef.current.position.x = newX
       setLocalMyX(newX)
 
-      // 서버 동기화
       if (socketRef.current.readyState === WebSocket.OPEN) {
         socketRef.current.send(JSON.stringify({ type: 'move', payload: { id: myId, x: newX } }))
       }
@@ -71,88 +71,25 @@ export const MainPage = () => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [myId])
 
-  // 메시지 로드
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/messages')
-        const data = await response.json()
-        setMessages(data)
-      } catch (error) {
-        console.error('메시지 불러오기 실패:', error)
-      }
-    }
-
-    fetchMessages()
-  }, [])
-
-  const handleSendMessage = async () => {
-    if (!user || !message) {
-      alert('사용자명과 메시지를 모두 입력해주세요.')
-      return
-    }
-
-    try {
-      await fetch('http://localhost:3000/message', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user, message }),
-      })
-
-      const response = await fetch('http://localhost:3000/messages')
-      const data = await response.json()
-      setMessages(data)
-      setMessage('')
-    } catch (error) {
-      console.error('메시지 보내기 실패:', error)
-    }
-  }
-
   return (
     <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
-      <div style={{ position: 'absolute', top: '100px' }}>
-        <input type="text" placeholder="사용자명" value={user} onChange={(e) => setUser(e.target.value)} />
-        <input type="text" placeholder="메시지 내용" value={message} onChange={(e) => setMessage(e.target.value)} />
-        <button onClick={handleSendMessage}>보내기</button>
-
-        <h2>최근 메시지</h2>
-        <ul>
-          {messages.map((msg, index) => (
-            <li key={index}>
-              <strong>{msg.user}:</strong> {msg.message}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Features />
       <div style={{ position: 'relative', width: '100%', height: '100%', backgroundColor: '#4e4949' }}>
         {positions.map((user) => {
           const isMe = user.id === myId
           const x = isMe ? localMyX : user.position.x
 
+          const handleKick = () => {
+            if (!isMe && socketRef.current?.readyState === WebSocket.OPEN) {
+              socketRef.current.send(JSON.stringify({ type: 'kick', payload: { id: user.id } }))
+            }
+          }
+
           return (
-            <div
-              key={user.id}
-              style={{
-                left: `calc(50% + ${x}px)`,
-                position: 'absolute',
-                display: 'flex',
-                bottom: '250px',
-                width: '40px',
-                height: '40px',
-                backgroundColor: user.id === myId ? 'blue' : 'gray',
-                borderRadius: '50%',
-                textAlign: 'center',
-                lineHeight: '40px',
-                color: '#fff',
-                transition: 'left 0.1s ease-out',
-                flexDirection: 'column',
-              }}
-            >
+            <S.Character isMe={isMe} x={x} key={user.id} onClick={handleKick}>
               <span>{user.position.x}</span>
               <span style={{ fontSize: '12px' }}>{user.id}</span>
-            </div>
+            </S.Character>
           )
         })}
       </div>
