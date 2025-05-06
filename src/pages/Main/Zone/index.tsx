@@ -13,9 +13,24 @@ export const Zone = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
+      if (e.code === 'Enter') {
         e.preventDefault()
-        setIsChatting(true)
+
+        if (!isChatting) {
+          setIsChatting(true)
+        } else {
+          const trimmed = chatMessage.trim()
+          if (trimmed) {
+            sendChat(trimmed)
+            setChatMessage('')
+
+            setTimeout(() => {
+              setIsChatting(false)
+            }, 0)
+          } else {
+            setIsChatting(false)
+          }
+        }
       }
 
       if (e.code === 'Escape') {
@@ -23,9 +38,10 @@ export const Zone = () => {
         setIsChatting(false)
       }
     }
+
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [isChatting, chatMessage, sendChat])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -119,13 +135,6 @@ export const Zone = () => {
             value={chatMessage}
             onChange={(e) => {
               if (e.target.value.length <= MESSAGE_LIMIT_LENGTH) setChatMessage(e.target.value)
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && chatMessage && myId) {
-                sendChat(chatMessage)
-                setChatMessage('')
-                setIsChatting(false)
-              }
             }}
             style={{
               position: 'absolute',
