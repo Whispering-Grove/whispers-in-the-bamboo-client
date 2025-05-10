@@ -9,13 +9,11 @@ import { useChatStore } from '@features/chat/store/useChatStore.ts'
 export const Zone = () => {
   const { user } = useAuthStore()
   const myId = useMemo(() => user?.id, [user?.id])
-  const { users, chats, addChat } = useChatStore()
+  const { users, chats } = useChatStore()
   const { socket, isConnect, sendMove, sendChat } = useWebSocket()
   const [localMyX, setLocalMyX] = useState(0)
   const [isChatting, setIsChatting] = useState(false)
   const [chatMessage, setChatMessage] = useState('')
-  const type = useMemo(() => Math.floor(Math.random() * 2), [])
-  const num = useMemo(() => (type === 0 ? 'hair' : 'dress'), [type])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -70,28 +68,13 @@ export const Zone = () => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [myId, socket, isConnect, sendMove])
 
-  useEffect(() => {
-    if (!socket || !isConnect) return
-
-    const handleMessage = (event: MessageEvent) => {
-      const data = JSON.parse(event.data)
-      if (data.type === 'chat') {
-        addChat(data.payload)
-      }
-    }
-
-    socket.addEventListener('message', handleMessage)
-    return () => socket.removeEventListener('message', handleMessage)
-  }, [isConnect])
-
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div>
         {users.map((user) => {
           const isMe = user.id === myId
           const x = isMe ? localMyX : user.position.x
-
-          const hairImageUrl = `src/shared/assets/images/${['hairs', 'cloth'][type]}/${user[num]}.png`
+          const hairImageUrl = `src/shared/assets/images/hairs/${user.hair}.png`
 
           return (
             <S.Character isMe={isMe} x={x} key={user.id}>

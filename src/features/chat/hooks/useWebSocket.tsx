@@ -10,7 +10,7 @@ export const WebSocketProvider = ({ children }: PropsWithChildren) => {
 }
 
 const useSocketState = () => {
-  const { setUsers } = useChatStore()
+  const { setUsers, addChat } = useChatStore()
   const socketRef = useRef<WebSocket | null>(null)
   const [isConnect, setConnect] = useState(false)
 
@@ -27,8 +27,13 @@ const useSocketState = () => {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
+      console.log('message', data)
       if (data.type === 'update-positions') {
         setUsers(data.payload)
+      }
+
+      if (data.type === 'chat') {
+        addChat(data.payload)
       }
     }
   }
@@ -43,6 +48,7 @@ const useSocketState = () => {
   }
 
   const sendChat = (userId: string, message: string) => {
+    console.log('chat??', message)
     socketRef.current?.send(JSON.stringify({ type: 'chat', payload: { id: userId, message } }))
   }
 

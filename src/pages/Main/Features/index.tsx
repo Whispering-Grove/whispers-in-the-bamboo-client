@@ -1,28 +1,10 @@
 import * as S from './styles.ts'
-import { useEffect } from 'react'
-import { useWebSocket } from '@features/chat/hooks/useWebSocket.tsx'
 import { useChatStore } from '@features/chat/store/useChatStore.ts'
 import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
 
 export const Features = () => {
-  const { socket } = useWebSocket()
-  const { setChats, chats } = useChatStore()
+  const { chats } = useChatStore()
   const { logout } = useAuthStore()
-
-  useEffect(() => {
-    if (!socket) return
-
-    const handleMessage = (event: MessageEvent) => {
-      const data = JSON.parse(event.data)
-      console.log(data)
-      if (data.type === 'chat') {
-        setChats(data.payload)
-      }
-    }
-
-    socket.addEventListener('message', handleMessage)
-    return () => socket.removeEventListener('message', handleMessage)
-  }, [socket])
 
   return (
     <S.Features>
