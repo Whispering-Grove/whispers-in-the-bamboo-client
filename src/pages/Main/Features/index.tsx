@@ -1,11 +1,13 @@
 import * as S from './styles.ts'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useWebSocket } from '@features/chat/hooks/useWebSocket.tsx'
-import { DISPLAY_MESSAGE_LIMIT } from '@features/chat/config/limit.ts'
+import { useChatStore } from '@features/chat/store/useChatStore.ts'
+import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
 
 export const Features = () => {
   const { socket } = useWebSocket()
-  const [messages, setMessages] = useState<{ user: string; message: string }[]>([])
+  const { setChats, chats } = useChatStore()
+  const { logout } = useAuthStore()
 
   useEffect(() => {
     if (!socket) return
@@ -13,11 +15,7 @@ export const Features = () => {
     const handleMessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data)
       if (data.type === 'chat') {
-        const { id, message } = data.payload
-        setMessages((prev) => {
-          const updated = [...prev, { user: id, message }]
-          return updated.slice(-DISPLAY_MESSAGE_LIMIT)
-        })
+        setChats(data.payload)
       }
     }
 
@@ -29,7 +27,7 @@ export const Features = () => {
     <S.Features>
       <S.FeatureChat>
         <S.Chats>
-          {messages.map((msg, index) => (
+          {chats.map((msg, index) => (
             <S.Chat key={index}>
               <strong>익명의 사용자:</strong> {msg.message}
             </S.Chat>
@@ -55,6 +53,9 @@ export const Features = () => {
         >
           모든 사용자 삭제
         </S.DeleteButton>
+      </S.FeatureController>
+      <S.FeatureController>
+        <S.DeleteButton onClick={logout}>로그아웃</S.DeleteButton>
       </S.FeatureController>
     </S.Features>
   )

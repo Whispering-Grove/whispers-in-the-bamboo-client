@@ -1,15 +1,22 @@
 import * as S from './styles.ts'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ChatBubble } from '@widgets/chat/ui/ChatBubble'
 import { useWebSocket } from '@features/chat/hooks/useWebSocket.tsx'
 import { MESSAGE_LIMIT_LENGTH } from '@features/chat/config/limit.ts'
+import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
+import { useChatStore } from '@features/chat/store/useChatStore.ts'
 
 export const Zone = () => {
-  const { socket, myId, users, sendMove, sendChat } = useWebSocket()
+  const { user } = useAuthStore()
+  const myId = useMemo(() => user?.id, [user?.id])
+  const { users } = useChatStore()
+  const { socket, sendMove, sendChat } = useWebSocket()
   const [localMyX, setLocalMyX] = useState(0)
   const [userChats, setUserChats] = useState<Record<string, string>>({})
   const [isChatting, setIsChatting] = useState(false)
   const [chatMessage, setChatMessage] = useState('')
+  const type = useMemo(() => Math.floor(Math.random() * 2), [])
+  const num = useMemo(() => (type === 0 ? 'hair' : 'dress'), [type])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -20,8 +27,8 @@ export const Zone = () => {
           setIsChatting(true)
         } else {
           const trimmed = chatMessage.trim()
-          if (trimmed) {
-            sendChat(trimmed)
+          if (myId && trimmed) {
+            sendChat(myId, trimmed)
             setChatMessage('')
 
             setTimeout(() => {
@@ -41,7 +48,7 @@ export const Zone = () => {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isChatting, chatMessage, sendChat])
+  }, [isChatting, chatMessage, sendChat, myId])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -55,7 +62,7 @@ export const Zone = () => {
         else return prevX
 
         if (socket.readyState === WebSocket.OPEN) {
-          sendMove(newX)
+          sendMove(myId, newX)
         }
 
         return newX
@@ -94,7 +101,8 @@ export const Zone = () => {
         {users.map((user) => {
           const isMe = user.id === myId
           const x = isMe ? localMyX : user.position.x
-          const hairImageUrl = `src/assets/images/hairs/${user.hair}.png`
+
+          const hairImageUrl = `src/shared/assets/images/${['hairs', 'cloth'][type]}/${user[num]}.png`
 
           const handleKick = () => {
             if (!isMe && socket?.readyState === WebSocket.OPEN) {

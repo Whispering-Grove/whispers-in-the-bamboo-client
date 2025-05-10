@@ -1,30 +1,20 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, PropsWithChildren, useContext, useRef } from 'react'
+import { useChatStore } from '@features/chat/store/useChatStore.ts'
 
-export type User = {
-  id: string
-  hair: number
-  dress: number
-  position: { x: number }
+const WebSocketContext = createContext<ReturnType<typeof useSocketState> | undefined>(undefined)
+
+export const WebSocketProvider = ({ children }: PropsWithChildren) => {
+  const state = useSocketState()
+
+  return <WebSocketContext.Provider value={state}>{children}</WebSocketContext.Provider>
 }
 
-interface WebSocketContextValue {
-  socket: WebSocket | null
-  myId: string | null
-  users: User[]
-  sendMove: (x: number) => void
-  sendChat: (message: string) => void
-}
-
-const WebSocketContext = createContext<WebSocketContextValue | undefined>(undefined)
-
-export const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
+const useSocketState = () => {
+  const { setUsers } = useChatStore()
   const socketRef = useRef<WebSocket | null>(null)
-  const [users, setUsers] = useState<User[]>([])
-  const [myId, setMyId] = useState<string | null>(null)
 
-  useEffect(() => {
-    const existingId = localStorage.getItem('userId')
-    const socket = new WebSocket(`ws://localhost:3000?userId=${existingId ?? ''}`)
+  const connect = (userId: string) => {
+    const socket = new WebSocket(`ws://localhost:3000?userId=${userId}`)
     socketRef.current = socket
 
     socket.onopen = () => {
@@ -35,32 +25,25 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
       const data = JSON.parse(event.data)
       if (data.type === 'update-positions') {
         setUsers(data.payload)
-      } else if (data.type === 'assign-id') {
-        setMyId(data.payload.id)
-        localStorage.setItem('userId', data.payload.id)
       }
     }
-
-    return () => {
-      socket.close()
-    }
-  }, [])
-
-  const sendMove = (x: number) => {
-    if (!myId || socketRef.current?.readyState !== WebSocket.OPEN) return
-    socketRef.current.send(JSON.stringify({ type: 'move', payload: { id: myId, x } }))
   }
 
-  const sendChat = (message: string) => {
-    if (!myId || socketRef.current?.readyState !== WebSocket.OPEN) return
-    socketRef.current.send(JSON.stringify({ type: 'chat', payload: { id: myId, message } }))
+  const disconnect = () => {
+    socketRef.current?.close()
   }
 
-  return (
-    <WebSocketContext.Provider value={{ socket: socketRef.current, myId, users, sendMove, sendChat }}>
-      {children}
-    </WebSocketContext.Provider>
-  )
+  const sendMove = (userId: string, x: number) => {
+    if (userId || socketRef.current?.readyState !== WebSocket.OPEN) return
+    socketRef.current.send(JSON.stringify({ type: 'move', payload: { id: userId, x } }))
+  }
+
+  const sendChat = (userId: string, message: string) => {
+    if (userId || socketRef.current?.readyState !== WebSocket.OPEN) return
+    socketRef.current.send(JSON.stringify({ type: 'chat', payload: { id: userId, message } }))
+  }
+
+  return { socket: socketRef.current, connect, disconnect, sendMove, sendChat }
 }
 
 export const useWebSocket = () => {

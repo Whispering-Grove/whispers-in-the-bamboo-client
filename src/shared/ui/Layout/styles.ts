@@ -9,4 +9,8 @@ export const Container = styled.div`
 
 export const ContentWrapper = styled.div`
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `

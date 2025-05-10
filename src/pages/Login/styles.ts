@@ -3,7 +3,6 @@ import styled from '@emotion/styled'
 
 export const Container = styled.div`
   position: relative;
-  margin: auto;
   width: 100%;
   height: 100%;
   min-width: 700px;
@@ -21,9 +20,14 @@ export const Button = styled.button`
   left: 50%;
   bottom: 50px;
   transform: translateX(-50%);
-  background-color: ${({ theme }) => theme.colors.red['500']};
-  width: 15vw;
-  height: 7vw;
+  width: min(max(20vw, 150px), 250px);
   font-size: 24px;
   border-radius: 7vw;
+  padding: 20px;
+`
+
+export const EnterImg = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 `

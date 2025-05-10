@@ -1,23 +1,23 @@
-import { User } from '@features/auth/types'
+import { User } from '@entities/user/model/types.ts'
 
 export const authUser = async (user: User) => {
-  try {
-    const res = await fetch('http://localhost:3000/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(user),
-    })
+  const res = await fetch('http://localhost:3000/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(user),
+  })
 
-    const data = await res.json()
+  const data = await res.json()
 
-    if (data.error) {
-      throw new Error(data.error)
-    }
-
-    return data
-  } catch (err) {
-    throw err
+  if (data.error) {
+    throw new Error(data.error)
   }
+
+  return data
+}
+
+export const removeUser = (userId: string) => {
+  navigator.sendBeacon('http://localhost:3000/delete-user', JSON.stringify({ userId }))
 }
