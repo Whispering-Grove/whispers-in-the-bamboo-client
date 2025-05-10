@@ -14,6 +14,8 @@ const useSocketState = () => {
   const socketRef = useRef<WebSocket | null>(null)
 
   const connect = (userId: string) => {
+    if (socketRef.current) return
+
     const socket = new WebSocket(`ws://localhost:3000?userId=${userId}`)
     socketRef.current = socket
 
