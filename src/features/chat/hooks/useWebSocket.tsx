@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useContext, useRef } from 'react'
+import { createContext, PropsWithChildren, useContext, useRef, useState } from 'react'
 import { useChatStore } from '@features/chat/store/useChatStore.ts'
 
 const WebSocketContext = createContext<ReturnType<typeof useSocketState> | undefined>(undefined)
@@ -12,6 +12,7 @@ export const WebSocketProvider = ({ children }: PropsWithChildren) => {
 const useSocketState = () => {
   const { setUsers } = useChatStore()
   const socketRef = useRef<WebSocket | null>(null)
+  const [isConnect, setConnect] = useState(false)
 
   const connect = (userId: string) => {
     if (socketRef.current) return
@@ -21,6 +22,7 @@ const useSocketState = () => {
 
     socket.onopen = () => {
       console.log('WebSocket connected')
+      setConnect(socket.readyState === WebSocket.OPEN)
     }
 
     socket.onmessage = (event) => {
@@ -33,19 +35,18 @@ const useSocketState = () => {
 
   const disconnect = () => {
     socketRef.current?.close()
+    setConnect(socketRef.current?.readyState === WebSocket.CLOSED)
   }
 
   const sendMove = (userId: string, x: number) => {
-    if (userId || socketRef.current?.readyState !== WebSocket.OPEN) return
-    socketRef.current.send(JSON.stringify({ type: 'move', payload: { id: userId, x } }))
+    socketRef.current?.send(JSON.stringify({ type: 'move', payload: { id: userId, x } }))
   }
 
   const sendChat = (userId: string, message: string) => {
-    if (userId || socketRef.current?.readyState !== WebSocket.OPEN) return
-    socketRef.current.send(JSON.stringify({ type: 'chat', payload: { id: userId, message } }))
+    socketRef.current?.send(JSON.stringify({ type: 'chat', payload: { id: userId, message } }))
   }
 
-  return { socket: socketRef.current, connect, disconnect, sendMove, sendChat }
+  return { socket: socketRef.current, connect, disconnect, sendMove, sendChat, isConnect }
 }
 
 export const useWebSocket = () => {

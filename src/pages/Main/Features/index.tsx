@@ -14,6 +14,7 @@ export const Features = () => {
 
     const handleMessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data)
+      console.log(data)
       if (data.type === 'chat') {
         setChats(data.payload)
       }
@@ -27,7 +28,7 @@ export const Features = () => {
     <S.Features>
       <S.FeatureChat>
         <S.Chats>
-          {chats.map((msg, index) => (
+          {Object.values(chats).map((msg, index) => (
             <S.Chat key={index}>
               <strong>익명의 사용자:</strong> {msg.message}
             </S.Chat>

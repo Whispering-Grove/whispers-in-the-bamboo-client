@@ -5,18 +5,18 @@ import { MESSAGE_TIME } from '@features/chat/config/limit.ts'
 
 interface ChatState {
   users: User[]
-  chats: Chat[]
+  chats: Record<string, Chat>
   timer: Timeout
   setUsers: (users: User[]) => void
   addUser: (user: User) => void
-  setChats: (chats: Chat[]) => void
+  setChats: (chats: Record<string, Chat>) => void
   addChat: (chat: Chat) => void
   removeChat: (id: string) => void
 }
 
 export const useChatStore = create<ChatState>()((set, get) => ({
   users: [],
-  chats: [],
+  chats: {},
   timer: new Timeout(),
 
   setUsers: (users: User[]) => {
@@ -27,13 +27,13 @@ export const useChatStore = create<ChatState>()((set, get) => ({
     set((state) => ({ users: state.users.concat(user) }))
   },
 
-  setChats: (chats: Chat[]) => {
+  setChats: (chats: Record<string, Chat>) => {
     set({ chats })
   },
 
   addChat: (chat: Chat) => {
     const chats = get().chats
-    set({ chats: chats.concat(chat) })
+    set({ chats: { ...chats, [chat.userId]: chat } })
 
     const timer = get().timer
 
@@ -43,6 +43,8 @@ export const useChatStore = create<ChatState>()((set, get) => ({
   },
 
   removeChat: (id: string) => {
-    set((state) => ({ chats: state.chats.filter((chat) => chat.id !== id) }))
+    const chats = get().chats
+    delete chats[id]
+    set({ chats })
   },
 }))

@@ -9,10 +9,9 @@ import { useChatStore } from '@features/chat/store/useChatStore.ts'
 export const Zone = () => {
   const { user } = useAuthStore()
   const myId = useMemo(() => user?.id, [user?.id])
-  const { users } = useChatStore()
-  const { socket, sendMove, sendChat } = useWebSocket()
+  const { users, chats, addChat } = useChatStore()
+  const { socket, isConnect, sendMove, sendChat } = useWebSocket()
   const [localMyX, setLocalMyX] = useState(0)
-  const [userChats, setUserChats] = useState<Record<string, string>>({})
   const [isChatting, setIsChatting] = useState(false)
   const [chatMessage, setChatMessage] = useState('')
   const type = useMemo(() => Math.floor(Math.random() * 2), [])
@@ -52,7 +51,7 @@ export const Zone = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!myId || !socket || isChatting) return
+      if (!myId || !socket || isChatting || !isConnect) return
 
       setLocalMyX((prevX) => {
         let newX = prevX
@@ -61,9 +60,7 @@ export const Zone = () => {
         else if (e.key === 'ArrowRight') newX += 5
         else return prevX
 
-        if (socket.readyState === WebSocket.OPEN) {
-          sendMove(myId, newX)
-        }
+        sendMove(myId, newX)
 
         return newX
       })
@@ -71,29 +68,21 @@ export const Zone = () => {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [myId, socket, sendMove])
+  }, [myId, socket, isConnect, sendMove])
 
   useEffect(() => {
-    if (!socket) return
+    if (!socket || !isConnect) return
 
     const handleMessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data)
       if (data.type === 'chat') {
-        const { id, message } = data.payload
-        setUserChats((prev) => ({ ...prev, [id]: message }))
-        setTimeout(() => {
-          setUserChats((prev) => {
-            const newChats = { ...prev }
-            delete newChats[id]
-            return newChats
-          })
-        }, 7000)
+        addChat(data.payload)
       }
     }
 
     socket.addEventListener('message', handleMessage)
     return () => socket.removeEventListener('message', handleMessage)
-  }, [socket])
+  }, [isConnect])
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -104,15 +93,9 @@ export const Zone = () => {
 
           const hairImageUrl = `src/shared/assets/images/${['hairs', 'cloth'][type]}/${user[num]}.png`
 
-          const handleKick = () => {
-            if (!isMe && socket?.readyState === WebSocket.OPEN) {
-              socket.send(JSON.stringify({ type: 'kick', payload: { id: user.id } }))
-            }
-          }
-
           return (
-            <S.Character isMe={isMe} x={x} key={user.id} onClick={handleKick}>
-              {userChats[user.id] && <ChatBubble message={userChats[user.id]} />}
+            <S.Character isMe={isMe} x={x} key={user.id}>
+              {chats[user.id] && <ChatBubble message={chats[user.id].message} />}
               <img
                 src={hairImageUrl}
                 alt={`${user.hair} hair`}
