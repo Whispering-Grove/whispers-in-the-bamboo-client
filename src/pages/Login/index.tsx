@@ -1,5 +1,5 @@
 import * as S from '@pages/Login/styles.ts'
-import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
+import { useAuthStore } from '@features/auth/store/useAuthStore'
 import { useEffect, useId } from 'react'
 
 export const Login = () => {

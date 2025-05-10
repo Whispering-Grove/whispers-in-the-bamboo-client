@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import bgImg from 'src/assets/images/bg.png'
+import bgImg from '@shared/assets/images/bg.png'
 
 export const Container = styled.div`
   width: 100%;

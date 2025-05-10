@@ -1,8 +1,8 @@
 import * as S from './styles.ts'
 import { useEffect, useState } from 'react'
-import { ChatBubble } from '@pages/Main/components/ChatBubble'
-import { useWebSocket } from '../../../context/useWebSocket.tsx'
-import { MESSAGE_LIMIT_LENGTH } from '../../../constants/limit.ts'
+import { ChatBubble } from '@widgets/chat/ui/ChatBubble'
+import { useWebSocket } from '@features/chat/hooks/useWebSocket.tsx'
+import { MESSAGE_LIMIT_LENGTH } from '@features/chat/config/limit.ts'
 
 export const Zone = () => {
   const { socket, myId, users, sendMove, sendChat } = useWebSocket()

@@ -1,7 +1,7 @@
 import * as S from './styles.ts'
 import { useEffect, useState } from 'react'
-import { useWebSocket } from '../../../context/useWebSocket.tsx'
-import { DISPLAY_MESSAGE_LIMIT } from '../../../constants/limit.ts'
+import { useWebSocket } from '@features/chat/hooks/useWebSocket.tsx'
+import { DISPLAY_MESSAGE_LIMIT } from '@features/chat/config/limit.ts'
 
 export const Features = () => {
   const { socket } = useWebSocket()

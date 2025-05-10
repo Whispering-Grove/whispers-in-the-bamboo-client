@@ -1,5 +1,5 @@
-import { Features } from 'src/pages/Main/Features'
-import { Zone } from 'src/pages/Main/Zone'
+import { Features } from '@pages/Main/Features'
+import { Zone } from '@pages/Main/Zone'
 import * as S from './styles.ts'
 
 export const Main = () => {

@@ -1,4 +1,4 @@
-import { css, Global } from '@emotion/react'
+import { Global, css } from '@emotion/react'
 
 export const GlobalStyle = () => (
   <Global
@@ -48,6 +48,36 @@ export const GlobalStyle = () => (
         background: none;
         border: 0;
         cursor: pointer;
+      }
+
+      input,
+      textarea,
+      select,
+      button {
+        font: inherit;
+        color: inherit;
+        background: none;
+        border: none;
+        outline: none;
+      }
+
+      img,
+      picture,
+      video,
+      canvas,
+      svg {
+        display: block;
+        max-width: 100%;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      ul,
+      ol {
+        list-style: none;
       }
     `}
   />
