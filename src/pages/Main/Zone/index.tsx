@@ -1,10 +1,10 @@
 import * as S from './styles.ts'
 import { useEffect, useMemo, useState } from 'react'
-import { ChatBubble } from '@widgets/chat/ui/ChatBubble'
 import { useWebSocket } from '@features/chat/hooks/useWebSocket.tsx'
 import { MESSAGE_LIMIT_LENGTH } from '@features/chat/config/limit.ts'
 import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
 import { useChatStore } from '@features/chat/store/useChatStore.ts'
+import { ChatBubble } from '@widgets/chat/ui/ChatBubble'
 
 export const Zone = () => {
   const { user } = useAuthStore()
@@ -24,6 +24,7 @@ export const Zone = () => {
           setIsChatting(true)
         } else {
           const trimmed = chatMessage.trim()
+          console.log(e.code, trimmed)
           if (myId && trimmed) {
             sendChat(myId, trimmed)
             setChatMessage('')
@@ -43,8 +44,8 @@ export const Zone = () => {
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    window.addEventListener('keypress', handleKeyDown)
+    return () => window.removeEventListener('keypress', handleKeyDown)
   }, [isChatting, chatMessage, sendChat, myId])
 
   useEffect(() => {
@@ -78,7 +79,7 @@ export const Zone = () => {
 
           return (
             <S.Character isMe={isMe} x={x} key={user.id}>
-              {chats[user.id] && <ChatBubble message={chats[user.id].message} />}
+              {chats[user.id]?.slice(-1)?.[0] && <ChatBubble message={chats[user.id].slice(-1)?.[0]?.message} />}
               <img
                 src={hairImageUrl}
                 alt={`${user.hair} hair`}

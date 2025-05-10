@@ -5,13 +5,12 @@ import { MESSAGE_TIME } from '@features/chat/config/limit.ts'
 
 interface ChatState {
   users: User[]
-  chats: Record<string, Chat>
+  chats: Record<string, Chat[]>
   timer: Timeout
   setUsers: (users: User[]) => void
   addUser: (user: User) => void
-  setChats: (chats: Record<string, Chat>) => void
   addChat: (chat: Chat) => void
-  removeChat: (id: string) => void
+  removeChat: (userId: string, chatId: string) => void
 }
 
 export const useChatStore = create<ChatState>()((set, get) => ({
@@ -27,24 +26,21 @@ export const useChatStore = create<ChatState>()((set, get) => ({
     set((state) => ({ users: state.users.concat(user) }))
   },
 
-  setChats: (chats: Record<string, Chat>) => {
-    set({ chats })
-  },
-
   addChat: (chat: Chat) => {
     const chats = get().chats
-    set({ chats: { ...chats, [chat.userId]: chat } })
+    const userChats = (chats[chat.userId] ?? [])?.concat(chat)
+    set({ chats: { ...chats, [chat.userId]: userChats } })
 
     const timer = get().timer
 
     timer.startTimeouts(() => {
-      get().removeChat(chat.id)
+      get().removeChat(chat.userId, chat.id)
     }, MESSAGE_TIME)
   },
 
-  removeChat: (id: string) => {
+  removeChat: (userId: string, chatId: string) => {
     const chats = get().chats
-    delete chats[id]
-    set({ chats })
+    const userChats = chats[userId].filter((chat) => chat.id !== chatId)
+    set({ chats: { ...chats, [userId]: userChats } })
   },
 }))

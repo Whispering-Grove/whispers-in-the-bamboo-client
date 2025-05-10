@@ -10,11 +10,13 @@ export const Features = () => {
     <S.Features>
       <S.FeatureChat>
         <S.Chats>
-          {Object.values(chats).map((msg, index) => (
-            <S.Chat key={index}>
-              <strong>익명의 사용자:</strong> {msg.message}
-            </S.Chat>
-          ))}
+          {Object.values(chats).map((userChats) =>
+            userChats.map((chat) => (
+              <S.Chat key={`${chat.id}`}>
+                <strong>익명의 사용자:</strong> {chat.message}
+              </S.Chat>
+            )),
+          )}
         </S.Chats>
       </S.FeatureChat>
 
