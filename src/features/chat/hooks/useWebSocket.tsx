@@ -27,7 +27,6 @@ const useSocketState = () => {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
-      console.log('message', data)
       if (data.type === 'update-positions') {
         setUsers(data.payload)
       }
@@ -48,7 +47,6 @@ const useSocketState = () => {
   }
 
   const sendChat = (userId: string, message: string) => {
-    console.log('chat??', message)
     socketRef.current?.send(JSON.stringify({ type: 'chat', payload: { id: userId, message } }))
   }
 
