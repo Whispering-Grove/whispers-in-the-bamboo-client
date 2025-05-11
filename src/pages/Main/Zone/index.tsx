@@ -5,6 +5,7 @@ import { MESSAGE_LIMIT_LENGTH } from '@features/chat/config/limit.ts'
 import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
 import { useChatStore } from '@features/chat/store/useChatStore.ts'
 import { ChatBubble } from '@widgets/chat/ui/ChatBubble'
+import Prison from '@shared/assets/images/prison.png'
 
 export const Zone = () => {
   const { user } = useAuthStore()
@@ -86,6 +87,9 @@ export const Zone = () => {
 
   return (
     <S.ZoneWrapper>
+      <S.ZonePrison>
+        <img src={Prison} alt={'감옥'} />
+      </S.ZonePrison>
       <div>
         {users.map((user) => {
           const isMe = user.id === myId
@@ -96,7 +100,7 @@ export const Zone = () => {
           const massage = chats[user.id]?.slice(-1)?.[0]
 
           return (
-            <S.Character isMe={isMe} x={x} key={user.id}>
+            <S.Character isMe={isMe} x={x} key={user.id} noChat={true}>
               {massage && <ChatBubble key={`${user.id}-${chats[user.id][0].message}`} message={massage.message} />}
               <img
                 src={hairImageUrl}

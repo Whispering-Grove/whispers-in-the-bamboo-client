@@ -1,12 +1,13 @@
 import styled from '@emotion/styled'
 import { css } from '@emotion/react'
 
-export const Character = styled.div<{ isMe: boolean; x: number }>`
+export const Character = styled.div<{ isMe: boolean; x: number; noChat: boolean }>`
   position: absolute;
   max-width: 80px;
   height: 100px;
   display: flex;
   bottom: 50px;
+  top: ${({ noChat }) => (noChat ? '240px' : 'initial')};
   left: ${({ x }) => x}px;
   z-index: ${({ isMe }) => (isMe ? 1 : 0)};
   transition: left ${({ isMe }) => (isMe ? '.1s' : '.3s')} ease-out;
@@ -28,4 +29,12 @@ export const ZoneWrapper = styled.div`
   width: 100%;
   height: 100%;
   min-width: 1300px;
+`
+
+export const ZonePrison = styled.div`
+  position: absolute;
+  top: 0;
+  right: 200px;
+  z-index: 10;
+  width: 350px;
 `
