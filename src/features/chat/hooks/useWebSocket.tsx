@@ -1,5 +1,6 @@
 import { createContext, PropsWithChildren, useContext, useRef, useState } from 'react'
 import { useChatStore } from '@features/chat/store/useChatStore.ts'
+import { API_PORT, API_URL } from '@shared/config/env.ts'
 
 const WebSocketContext = createContext<ReturnType<typeof useSocketState> | undefined>(undefined)
 
@@ -17,7 +18,7 @@ const useSocketState = () => {
   const connect = (userId: string) => {
     if (socketRef.current) return
 
-    const socket = new WebSocket(`ws://localhost:3000?userId=${userId}`)
+    const socket = new WebSocket(`ws://${API_URL}:${API_PORT}?userId=${userId}`)
     socketRef.current = socket
 
     socket.onopen = () => {

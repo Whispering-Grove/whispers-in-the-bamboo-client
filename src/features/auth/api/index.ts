@@ -1,7 +1,8 @@
 import { User } from '@entities/user/model/types.ts'
+import { API_PORT, API_URL } from '@shared/config/env.ts'
 
 export const authUser = async (user: User) => {
-  const res = await fetch('http://localhost:3000/login', {
+  const res = await fetch(`http://${API_URL}:${API_PORT}/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -19,5 +20,5 @@ export const authUser = async (user: User) => {
 }
 
 export const removeUser = (userId: string) => {
-  navigator.sendBeacon('http://localhost:3000/delete-user', JSON.stringify({ userId }))
+  navigator.sendBeacon(`http://${API_URL}:${API_PORT}/delete-user`, JSON.stringify({ userId }))
 }
