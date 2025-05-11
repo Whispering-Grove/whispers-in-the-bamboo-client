@@ -1,10 +1,10 @@
 export class Timeout {
-  private timeoutId: number | null
-  private timeoutIds: Record<number, boolean>
+  private timeoutId: NodeJS.Timeout | null
+  private timeoutIds: Map<NodeJS.Timeout, boolean>
 
   constructor() {
     this.timeoutId = null
-    this.timeoutIds = {}
+    this.timeoutIds = new Map()
   }
 
   startTimeout(callback: () => void, ms: number) {
@@ -29,27 +29,26 @@ export class Timeout {
       this.endTimeouts(timeoutId)
     }, ms)
 
-    this.timeoutIds[timeoutId] = true
+    this.timeoutIds.set(timeoutId, true)
   }
 
-  endTimeouts(id?: number) {
-    if (typeof id === 'number') {
+  endTimeouts(id?: NodeJS.Timeout) {
+    if (id !== undefined) {
       clearTimeout(id)
-      delete this.timeoutIds[id]
+      this.timeoutIds.delete(id)
       return
     }
 
-    for (const key in this.timeoutIds) {
-      const id = Number(key)
-      clearTimeout(id)
+    for (const key of this.timeoutIds.keys()) {
+      clearTimeout(key)
     }
 
-    this.timeoutIds = {}
+    this.timeoutIds.clear()
   }
 }
 
 export class Interval {
-  intervalId: number | null
+  intervalId: NodeJS.Timeout | null
 
   constructor() {
     this.intervalId = null

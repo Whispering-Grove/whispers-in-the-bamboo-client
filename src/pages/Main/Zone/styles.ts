@@ -3,6 +3,7 @@ import { css } from '@emotion/react'
 
 export const Character = styled.div<{ isMe: boolean; x: number }>`
   position: absolute;
+  max-width: 80px;
   height: 100px;
   display: flex;
   bottom: 50px;
@@ -20,4 +21,11 @@ export const Character = styled.div<{ isMe: boolean; x: number }>`
         filter: drop-shadow(0 0 5px white);
       }
     `}
+`
+
+export const ZoneWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 1300px;
 `
