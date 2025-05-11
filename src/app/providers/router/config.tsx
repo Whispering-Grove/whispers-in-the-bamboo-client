@@ -1,6 +1,6 @@
 import { RouteObject } from 'react-router-dom'
-import { Main } from 'src/pages/Main'
-import { Login } from 'src/pages/Login'
+import { Main } from '@pages/Main'
+import { Login } from '@pages/Login'
 import { Paths } from '@shared/config/paths.ts'
 import { LoginGuard } from '@widgets/auth/loginGuard.tsx'
 
