@@ -76,10 +76,11 @@ export const Zone = () => {
           const isMe = user.id === myId
           const x = isMe ? localMyX : user.position.x
           const hairImageUrl = `src/shared/assets/images/hairs/${user.hair}.png`
+          const massage = chats[user.id]?.slice(-1)?.[0]
 
           return (
             <S.Character isMe={isMe} x={x} key={user.id}>
-              {chats[user.id]?.slice(-1)?.[0] && <ChatBubble message={chats[user.id].slice(-1)?.[0]?.message} />}
+              {massage && <ChatBubble key={`${user.id}-${chats[user.id][0].message}`} message={massage.message} />}
               <img
                 src={hairImageUrl}
                 alt={`${user.hair} hair`}

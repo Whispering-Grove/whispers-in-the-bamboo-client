@@ -1,25 +1,39 @@
-export const ChatBubble = ({ message }: { message: string }) => {
+import * as S from './styled.ts'
+import { useMemo } from 'react'
+
+const COLORS = ['#ff6699', '#ffcc00', '#66ccff', '#99ff33', '#ff9933', '#cc66ff']
+
+function getRandomColor() {
+  return COLORS[Math.floor(Math.random() * COLORS.length)]
+}
+
+type ChatBubbleProps = {
+  message: string
+}
+
+export const ChatBubble = ({ message }: ChatBubbleProps) => {
+  const coloredMessage = useMemo(() => {
+    return [...message].map((char, idx) => ({
+      char,
+      color: getRandomColor(),
+      delay: idx * 0.2,
+    }))
+  }, [message])
+
   return (
-    <div
-      style={{
-        position: 'absolute',
-        bottom: '130px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        padding: '6px 10px',
-        backgroundColor: 'white',
-        color: 'black',
-        borderRadius: '10px',
-        fontSize: '14px',
-        maxWidth: '200px',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
-        zIndex: 10,
-      }}
-    >
-      {message}
-    </div>
+    <S.Chat>
+      {coloredMessage.map((item, i) => (
+        <S.CharSpan
+          key={`${item.char}-${i}-${message}`}
+          delay={item.delay}
+          style={{
+            color: item.color,
+            textShadow: `0 0 6px ${item.color}, 0 0 12px ${item.color}`,
+          }}
+        >
+          {item.char}
+        </S.CharSpan>
+      ))}
+    </S.Chat>
   )
 }
