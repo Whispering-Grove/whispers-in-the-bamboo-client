@@ -8,10 +8,10 @@ import { ChatBubble } from '@widgets/chat/ui/ChatBubble'
 
 export const Zone = () => {
   const { user } = useAuthStore()
-  const myId = useMemo(() => user?.id, [user?.id])
   const { users, chats } = useChatStore()
+  const myId = useMemo(() => user?.id, [user?.id])
   const { socket, isConnect, sendMove, sendChat } = useWebSocket()
-  const [localMyX, setLocalMyX] = useState(0)
+  const [localMyX, setLocalMyX] = useState(-1)
   const [isChatting, setIsChatting] = useState(false)
   const [chatMessage, setChatMessage] = useState('')
 
@@ -24,7 +24,6 @@ export const Zone = () => {
           setIsChatting(true)
         } else {
           const trimmed = chatMessage.trim()
-          console.log(e.code, trimmed)
           if (myId && trimmed) {
             sendChat(myId, trimmed)
             setChatMessage('')
@@ -69,11 +68,20 @@ export const Zone = () => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [myId, socket, isConnect, sendMove])
 
+  useEffect(() => {
+    if (localMyX === -1) {
+      const me = users.filter((user) => user.id === myId)[0]
+      setLocalMyX(me ? me.position.x : -1)
+    }
+  }, [users, isConnect])
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div>
         {users.map((user) => {
           const isMe = user.id === myId
+          if (isMe && localMyX === -1) return <></>
+
           const x = isMe ? localMyX : user.position.x
           const hairImageUrl = `src/shared/assets/images/hairs/${user.hair}.png`
           const massage = chats[user.id]?.slice(-1)?.[0]

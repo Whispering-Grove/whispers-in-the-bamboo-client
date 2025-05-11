@@ -37,8 +37,6 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   logout: () => {
     const userId = get().user?.id
 
-    console.log(userId)
-
     if (userId) {
       removeUser(userId)
     }
