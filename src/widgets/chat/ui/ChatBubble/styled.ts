@@ -25,7 +25,7 @@ export const CharSpan = styled.span<{ delay: number }>`
     0% {
       opacity: 0;
       transform: translateY(0px) scale(0.9);
-      filter: blur(2px);
+      filter: blur(1px);
     }
     20% {
       opacity: 1;

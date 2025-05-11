@@ -16,7 +16,7 @@ export const ChatBubble = ({ message }: ChatBubbleProps) => {
     return [...message].map((char, idx) => ({
       char,
       color: getRandomColor(),
-      delay: idx * 0.2,
+      delay: idx * 0.3,
     }))
   }, [message])
 
