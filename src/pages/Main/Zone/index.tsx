@@ -51,12 +51,21 @@ export const Zone = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!myId || !socket || isChatting || !isConnect) return
 
+      const clientWidth = Math.min(window.innerWidth, 1300) - 80
+
       setLocalMyX((prevX) => {
         let newX = prevX
 
         if (e.key === 'ArrowLeft') newX -= 5
         else if (e.key === 'ArrowRight') newX += 5
-        else return prevX
+
+        if (newX <= 0) {
+          newX = 0
+        }
+
+        if (newX >= clientWidth) {
+          newX = clientWidth
+        }
 
         sendMove(myId, newX)
 
@@ -76,7 +85,7 @@ export const Zone = () => {
   }, [users, isConnect])
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+    <S.ZoneWrapper>
       <div>
         {users.map((user) => {
           const isMe = user.id === myId
@@ -134,6 +143,6 @@ export const Zone = () => {
           />
         </div>
       )}
-    </div>
+    </S.ZoneWrapper>
   )
 }
