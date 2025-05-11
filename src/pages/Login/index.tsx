@@ -10,7 +10,7 @@ export const Login = () => {
   const handleLogin = async () => {
     const user = {
       id: `${new Date().getTime()}_${Math.floor(Math.random() * 9000) + 1000}`,
-      position: { x: 0 },
+      position: { x: Math.floor(Math.random() * (1200 - 100 + 1)) + 100 },
       hair: Math.floor(Math.random() * 13) + 1,
       dress: Math.floor(Math.random() * 13) + 1,
     }
