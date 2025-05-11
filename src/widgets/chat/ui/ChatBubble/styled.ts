@@ -1,13 +1,27 @@
 import styled from '@emotion/styled'
+import { keyframes, css } from '@emotion/react'
+
+const floatUp = keyframes`
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px) scale(0.9);
+        filter: blur(2px);
+    }
+    30% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0px) scale(1);
+        filter: blur(0);
+    }
+`
 
 export const Chat = styled.div`
-  position: absolute;
-  bottom: 130px;
+  position: relative;
+  width: 1px;
   left: 50%;
   transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: -30px;
   pointer-events: none;
   font-family: 'Luckiest Guy', 'Impact', sans-serif;
   font-size: 48px;
@@ -15,25 +29,23 @@ export const Chat = styled.div`
   z-index: 10;
 `
 
-export const CharSpan = styled.span<{ delay: number }>`
-  display: inline-block;
-  animation: floatUp 1s ease-out forwards;
-  animation-delay: ${({ delay }) => delay}s;
-  opacity: 0;
+export const CharSpan = styled.span<{
+  bottom: number
+  delay: number
+  isNew: boolean
+}>`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: ${({ bottom }) => bottom}px;
+  opacity: 1;
+  transition: bottom 0.3s ease;
 
-  @keyframes floatUp {
-    0% {
+  ${({ isNew, delay }) =>
+    isNew &&
+    css`
       opacity: 0;
-      transform: translateY(0px) scale(0.9);
-      filter: blur(1px);
-    }
-    20% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(-40px) scale(1.2);
-      filter: blur(3px);
-    }
-  }
+      animation: ${floatUp} 0.3s ease-out forwards;
+      animation-delay: ${delay}s;
+    `}
 `

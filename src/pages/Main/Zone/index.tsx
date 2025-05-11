@@ -13,7 +13,7 @@ export const Zone = () => {
   const { socket, isConnect, sendMove, sendChat } = useWebSocket()
   const [localMyX, setLocalMyX] = useState(-1)
   const [isChatting, setIsChatting] = useState(false)
-  const [chatMessage, setChatMessage] = useState('')
+  const [chatMessage, setChatMessage] = useState('테스트')
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -26,7 +26,7 @@ export const Zone = () => {
           const trimmed = chatMessage.trim()
           if (myId && trimmed) {
             sendChat(myId, trimmed)
-            setChatMessage('')
+            setChatMessage('테스트')
 
             setTimeout(() => {
               setIsChatting(false)
@@ -88,7 +88,8 @@ export const Zone = () => {
 
           return (
             <S.Character isMe={isMe} x={x} key={user.id}>
-              {massage && <ChatBubble key={`${user.id}-${chats[user.id][0].message}`} message={massage.message} />}
+              {isMe && <span>{`${user?.id}`}</span>}
+              {massage && <ChatBubble key={1} message={massage.message} />}
               <img
                 src={hairImageUrl}
                 alt={`${user.hair} hair`}
