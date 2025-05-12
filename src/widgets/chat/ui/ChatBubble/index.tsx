@@ -1,5 +1,5 @@
 import * as S from './styled.ts'
-import { useMemo } from 'react'
+import { memo, useEffect, useState } from 'react'
 
 const COLORS = ['#ff6699', '#ffcc00', '#66ccff', '#99ff33', '#ff9933', '#cc66ff']
 
@@ -11,21 +11,37 @@ type ChatBubbleProps = {
   message: string
 }
 
-export const ChatBubble = ({ message }: ChatBubbleProps) => {
-  const coloredMessage = useMemo(() => {
-    return [...message].map((char, idx) => ({
-      char,
-      color: getRandomColor(),
-      delay: idx * 0.3,
-    }))
+export const ChatBubble = memo(({ message }: ChatBubbleProps) => {
+  const baseBottom = 130
+  const lineHeight = 40
+  const [charList, setCharList] = useState<{ char: string; color: string; isNew: boolean }[]>([])
+
+  useEffect(() => {
+    setCharList([])
+    const chars = [...message]
+    chars.forEach((char, i) => {
+      setTimeout(() => {
+        setCharList((prev) => [
+          ...prev.map((c) => ({ ...c, isNew: false })),
+          {
+            char,
+            color: getRandomColor(),
+            isNew: true,
+          },
+        ])
+      }, i * 300)
+    })
   }, [message])
 
   return (
     <S.Chat>
-      {coloredMessage.map((item, i) => (
+      <span>{charList.map((item) => item.char).join('')}</span>
+      {charList.map((item, idx, arr) => (
         <S.CharSpan
-          key={`${item.char}-${i}-${message}`}
-          delay={item.delay}
+          key={`${item.char}-${idx}`}
+          bottom={baseBottom + (arr.length - 1 - idx) * lineHeight}
+          isNew={item.isNew}
+          delay={0}
           style={{
             color: item.color,
             textShadow: `0 0 6px ${item.color}, 0 0 12px ${item.color}`,
@@ -36,4 +52,4 @@ export const ChatBubble = ({ message }: ChatBubbleProps) => {
       ))}
     </S.Chat>
   )
-}
+})

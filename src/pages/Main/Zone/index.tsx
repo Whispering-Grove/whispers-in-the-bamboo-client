@@ -100,8 +100,9 @@ export const Zone = () => {
           const massage = chats[user.id]?.slice(-1)?.[0]
 
           return (
-            <S.Character isMe={isMe} x={x} key={user.id} noChat={true}>
-              {massage && <ChatBubble key={`${user.id}-${chats[user.id][0].message}`} message={massage.message} />}
+            <S.Character  isMe={isMe} x={x} key={user.id} noChat={true}>
+              {isMe && <span>{`${user?.id}`}</span>}
+              {massage && <ChatBubble key={1} message={massage.message} />}
               <img
                 src={hairImageUrl}
                 alt={`${user.hair} hair`}
