@@ -74,8 +74,8 @@ export const Zone = () => {
         if (e.key === 'ArrowLeft') newX -= 5
         else if (e.key === 'ArrowRight') newX += 5
 
-        if (newX <= (noChat ? clientWidth - 450 : 0)) {
-          newX = noChat ? clientWidth - 450 : 0
+        if (newX <= (noChat ? clientWidth - (200 + 240) : 0)) {
+          newX = noChat ? clientWidth - (200 + 240) : 0
         }
 
         if (newX >= (noChat ? clientWidth - 200 : clientWidth)) {
@@ -99,6 +99,12 @@ export const Zone = () => {
     }
   }, [users, isConnect])
 
+  useEffect(() => {
+    if (user) {
+      setLocalMyX(user.position.x)
+    }
+  }, [user])
+
   return (
     <S.ZoneWrapper>
       <S.ZonePrison>
@@ -115,7 +121,6 @@ export const Zone = () => {
 
           return (
             <S.Character isMe={isMe} x={x} key={user.id} noChat={user?.noChat}>
-              {isMe && <span>{`${user?.id}`}</span>}
               {massage && <ChatBubble key={1} message={massage.message} />}
               <img
                 src={hairImageUrl}

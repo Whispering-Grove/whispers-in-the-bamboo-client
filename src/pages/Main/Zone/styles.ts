@@ -10,7 +10,7 @@ export const Character = styled.div<{ isMe: boolean; x: number; noChat: boolean 
   top: ${({ noChat }) => (noChat ? '240px' : 'initial')};
   left: ${({ x }) => x}px;
   z-index: ${({ isMe }) => (isMe ? 1 : 0)};
-  transition: left ${({ isMe }) => (isMe ? '.1s' : '.3s')} ease-out;
+  transition: left ${({ isMe, noChat }) => (isMe ? '.1s' : noChat ? '.0s' : '.3s')} ease-out;
 
   ${({ isMe }) =>
     isMe &&

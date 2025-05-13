@@ -34,12 +34,14 @@ const useSocketState = () => {
       if (data.type === 'update-positions') {
         const users = data.payload as User[]
         setUsers(users)
+      }
 
+      if (data.type === 'no-chat') {
+        const users = data.payload as User[]
         const findMyData = users.find((user) => user.id === my?.id)
-        if (findMyData && findMyData.noChat) {
-          findMyData.position.x = 1300 - 450
+        if (findMyData) {
+          setUsers(users)
           setUser(findMyData)
-          sendMove(findMyData.id, 1300 - 450)
         }
       }
 

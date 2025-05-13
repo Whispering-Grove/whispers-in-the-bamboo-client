@@ -35,7 +35,6 @@ export const ChatBubble = memo(({ message }: ChatBubbleProps) => {
 
   return (
     <S.Chat>
-      <span>{charList.map((item) => item.char).join('')}</span>
       {charList.map((item, idx, arr) => (
         <S.CharSpan
           key={`${item.char}-${idx}`}
