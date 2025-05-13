@@ -74,8 +74,8 @@ export const Zone = () => {
         if (e.key === 'ArrowLeft') newX -= 5
         else if (e.key === 'ArrowRight') newX += 5
 
-        if (newX <= (noChat ? clientWidth - 450 : 0)) {
-          newX = noChat ? clientWidth - 450 : 0
+        if (newX <= (noChat ? clientWidth - (200 + 240) : 0)) {
+          newX = noChat ? clientWidth - (200 + 240) : 0
         }
 
         if (newX >= (noChat ? clientWidth - 200 : clientWidth)) {
@@ -98,6 +98,12 @@ export const Zone = () => {
       setLocalMyX(me ? me.position.x : -1)
     }
   }, [users, isConnect])
+
+  useEffect(() => {
+    if (user) {
+      setLocalMyX(user.position.x)
+    }
+  }, [user])
 
   return (
     <S.ZoneWrapper>
