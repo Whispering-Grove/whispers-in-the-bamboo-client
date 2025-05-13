@@ -13,7 +13,7 @@ type ChatBubbleProps = {
 
 export const ChatBubble = memo(({ message }: ChatBubbleProps) => {
   const baseBottom = 130
-  const lineHeight = 40
+  const lineHeight = 30
   const [charList, setCharList] = useState<{ char: string; color: string; isNew: boolean }[]>([])
   const timers = useRef<NodeJS.Timeout[]>([])
 
