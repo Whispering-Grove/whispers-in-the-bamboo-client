@@ -1,7 +1,7 @@
 import * as S from './styles.ts'
 import { useEffect, useMemo, useState } from 'react'
 import { useWebSocket } from '@features/chat/hooks/useWebSocket.tsx'
-import { MESSAGE_DELAY_TIME, MESSAGE_LIMIT_LENGTH } from '@features/chat/config/limit.ts'
+import { MESSAGE_DELAY_TIME, MESSAGE_LIMIT_LENGTH, MESSAGE_SEND_TIME } from '@features/chat/config/limit.ts'
 import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
 import { useChatStore } from '@features/chat/store/useChatStore.ts'
 import { ChatBubble } from '@widgets/chat/ui/ChatBubble'
@@ -43,7 +43,7 @@ export const Zone = () => {
             sendChat(myId, trimmed, currentCount)
             setChatMessage('')
 
-            setTimeout(() => {
+            timer.startTimeouts(() => {
               setIsChatting(false)
             }, 0)
           } else {
@@ -82,7 +82,9 @@ export const Zone = () => {
           newX = noChat ? clientWidth - 200 : clientWidth
         }
 
-        sendMove(myId, newX)
+        timer.startTimeout(() => {
+          sendMove(myId, newX)
+        }, MESSAGE_SEND_TIME)
 
         return newX
       })
