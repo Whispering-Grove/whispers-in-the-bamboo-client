@@ -1,5 +1,5 @@
 import * as S from './styled.ts'
-import { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 
 const COLORS = ['#ff6699', '#ffcc00', '#66ccff', '#99ff33', '#ff9933', '#cc66ff']
 
@@ -15,27 +15,31 @@ export const ChatBubble = memo(({ message }: ChatBubbleProps) => {
   const baseBottom = 130
   const lineHeight = 40
   const [charList, setCharList] = useState<{ char: string; color: string; isNew: boolean }[]>([])
+  const timers = useRef<NodeJS.Timeout[]>([])
 
   useEffect(() => {
+    timers.current.forEach(clearTimeout)
+    timers.current = []
+
     setCharList([])
+
     const chars = [...message]
     chars.forEach((char, i) => {
-      setTimeout(() => {
-        setCharList((prev) => [
-          ...prev.map((c) => ({ ...c, isNew: false })),
-          {
-            char,
-            color: getRandomColor(),
-            isNew: true,
-          },
-        ])
+      const t = setTimeout(() => {
+        setCharList((prev) => [...prev, { char, color: getRandomColor(), isNew: true }])
       }, i * 300)
+
+      timers.current.push(t)
     })
+
+    return () => {
+      timers.current.forEach(clearTimeout)
+      timers.current = []
+    }
   }, [message])
 
   return (
     <S.Chat>
-      <span>{charList.map((item) => item.char).join('')}</span>
       {charList.map((item, idx, arr) => (
         <S.CharSpan
           key={`${item.char}-${idx}`}
