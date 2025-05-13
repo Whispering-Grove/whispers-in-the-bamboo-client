@@ -7,6 +7,7 @@ import { useChatStore } from '@features/chat/store/useChatStore.ts'
 import { ChatBubble } from '@widgets/chat/ui/ChatBubble'
 import Prison from '@shared/assets/images/prison.png'
 import { Timeout } from '@shared/lib/timer.ts'
+import { hairs } from '@shared/assets/images/index.ts'
 
 export const Zone = () => {
   const { user, addUserChatCount, subUserChatCount } = useAuthStore()
@@ -123,7 +124,7 @@ export const Zone = () => {
           if (isMe && localMyX === -1) return <></>
 
           const x = isMe ? localMyX : user.position.x
-          const hairImageUrl = `src/shared/assets/images/hairs/${user.hair}.png`
+          const hairImageUrl = hairs[`hair${user.hair}`]
           const message = chats[user.id]?.slice(-1)?.[0]
 
           return (
