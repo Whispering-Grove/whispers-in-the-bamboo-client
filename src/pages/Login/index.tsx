@@ -21,6 +21,20 @@ export const Login = () => {
   }
 
   useEffect(() => {
+    const handleEnter = (event: globalThis.KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        handleLogin()
+      }
+    }
+
+    window.addEventListener('keyup', handleEnter)
+
+    return () => {
+      window.removeEventListener('keyup', handleEnter)
+    }
+  }, [])
+
+  useEffect(() => {
     if (error) {
       alert(error)
     }
@@ -28,7 +42,7 @@ export const Login = () => {
 
   return (
     <S.Container>
-      <S.Button onClick={handleLogin}>
+      <S.Button type={'submit'} onClick={handleLogin}>
         <S.EnterImg src={isLoading ? entering : enter} alt="입장하기" />
       </S.Button>
     </S.Container>
