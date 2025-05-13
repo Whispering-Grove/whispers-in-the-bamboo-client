@@ -1,20 +1,28 @@
 import styled from '@emotion/styled'
 import { keyframes, css } from '@emotion/react'
 
-const floatUp = keyframes`
-    0% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(20px) scale(0.9);
-        filter: blur(2px);
-    }
-    30% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0px) scale(1);
-        filter: blur(0);
-    }
+const floatSmokeUp = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.9) rotate(0deg);
+    filter: blur(2px);
+  }
+  25% {
+    transform: translateX(-52%) translateY(-5px) scale(1) rotate(-3deg);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(-48%) translateY(-15px) scale(1.05) rotate(3deg);
+    filter: blur(0px);
+  }
+  75% {
+    transform: translateX(-51%) translateY(-30px) scale(1.1) rotate(-2deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-45px) scale(1.15) rotate(0deg);
+    filter: blur(1px);
+  }
 `
 
 export const Chat = styled.div`
@@ -24,7 +32,7 @@ export const Chat = styled.div`
   transform: translateX(-50%);
   pointer-events: none;
   font-family: 'Luckiest Guy', 'Impact', sans-serif;
-  font-size: 48px;
+  font-size: 36px;
   font-weight: 900;
   z-index: 10;
 `
@@ -39,13 +47,13 @@ export const CharSpan = styled.span<{
   transform: translateX(-50%);
   bottom: ${({ bottom }) => bottom}px;
   opacity: 1;
-  transition: bottom 0.3s ease;
+  transition: bottom 0.3s ease-in-out;
 
   ${({ isNew, delay }) =>
     isNew &&
     css`
       opacity: 0;
-      animation: ${floatUp} 0.3s ease-out forwards;
+      animation: ${floatSmokeUp} 3s ease-in-out forwards;
       animation-delay: ${delay}s;
     `}
 `
