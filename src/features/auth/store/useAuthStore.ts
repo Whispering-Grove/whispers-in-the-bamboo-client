@@ -9,6 +9,8 @@ interface AuthState {
 
   // actions
   setUser: (user: User | null) => void
+  addUserChatCount: () => number
+  subUserChatCount: () => void
   login: (user: User) => Promise<void>
   logout: () => void
 }
@@ -20,6 +22,24 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   setUser: (user: User | null) => {
     set({ user })
+  },
+
+  addUserChatCount: () => {
+    const user = get().user
+
+    if (user) {
+      user.chatCount += 1
+    }
+
+    return user?.chatCount ?? 0
+  },
+
+  subUserChatCount: () => {
+    const user = get().user
+
+    if (user) {
+      user.chatCount -= 1
+    }
   },
 
   login: async (user: User) => {

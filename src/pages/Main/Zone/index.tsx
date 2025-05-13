@@ -1,16 +1,19 @@
 import * as S from './styles.ts'
 import { useEffect, useMemo, useState } from 'react'
 import { useWebSocket } from '@features/chat/hooks/useWebSocket.tsx'
-import { MESSAGE_LIMIT_LENGTH } from '@features/chat/config/limit.ts'
+import { MESSAGE_DELAY_TIME, MESSAGE_LIMIT_LENGTH } from '@features/chat/config/limit.ts'
 import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
 import { useChatStore } from '@features/chat/store/useChatStore.ts'
 import { ChatBubble } from '@widgets/chat/ui/ChatBubble'
 import Prison from '@shared/assets/images/prison.png'
+import { Timeout } from '@shared/lib/timer.ts'
 
 export const Zone = () => {
-  const { user } = useAuthStore()
+  const { user, addUserChatCount, subUserChatCount } = useAuthStore()
   const { users, chats } = useChatStore()
+  const timer = useMemo(() => new Timeout(), [])
   const myId = useMemo(() => user?.id, [user?.id])
+  const noChat = useMemo(() => user?.noChat, [user?.noChat])
   const { socket, isConnect, sendMove, sendChat } = useWebSocket()
   const [localMyX, setLocalMyX] = useState(-1)
   const [isChatting, setIsChatting] = useState(false)
@@ -20,13 +23,24 @@ export const Zone = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Enter') {
         e.preventDefault()
+        if (noChat) {
+          setIsChatting(false)
+          alert('도배하셔서 30초간 채팅 금지요~')
+          return
+        }
 
         if (!isChatting) {
           setIsChatting(true)
         } else {
           const trimmed = chatMessage.trim()
           if (myId && trimmed) {
-            sendChat(myId, trimmed)
+            const currentCount = addUserChatCount()
+
+            timer.startTimeout(() => {
+              subUserChatCount()
+            }, MESSAGE_DELAY_TIME)
+
+            sendChat(myId, trimmed, currentCount)
             setChatMessage('')
 
             setTimeout(() => {
@@ -52,7 +66,7 @@ export const Zone = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!myId || !socket || isChatting || !isConnect) return
 
-      const clientWidth = Math.min(window.innerWidth, 1300) - 80
+      const clientWidth = 1300 - 80
 
       setLocalMyX((prevX) => {
         let newX = prevX
@@ -60,12 +74,12 @@ export const Zone = () => {
         if (e.key === 'ArrowLeft') newX -= 5
         else if (e.key === 'ArrowRight') newX += 5
 
-        if (newX <= 0) {
-          newX = 0
+        if (newX <= (noChat ? clientWidth - 450 : 0)) {
+          newX = noChat ? clientWidth - 450 : 0
         }
 
-        if (newX >= clientWidth) {
-          newX = clientWidth
+        if (newX >= (noChat ? clientWidth - 200 : clientWidth)) {
+          newX = noChat ? clientWidth - 200 : clientWidth
         }
 
         sendMove(myId, newX)
@@ -76,7 +90,7 @@ export const Zone = () => {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [myId, socket, isConnect, sendMove])
+  }, [noChat, myId, socket, isConnect, sendMove])
 
   useEffect(() => {
     if (localMyX === -1) {
@@ -100,7 +114,7 @@ export const Zone = () => {
           const massage = chats[user.id]?.slice(-1)?.[0]
 
           return (
-            <S.Character isMe={isMe} x={x} key={user.id} noChat={true}>
+            <S.Character isMe={isMe} x={x} key={user.id} noChat={user?.noChat}>
               {isMe && <span>{`${user?.id}`}</span>}
               {massage && <ChatBubble key={1} message={massage.message} />}
               <img

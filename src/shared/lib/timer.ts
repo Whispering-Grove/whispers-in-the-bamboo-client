@@ -23,17 +23,18 @@ export class Timeout {
     }
   }
 
-  startTimeouts(callback: () => void, ms: number) {
+  startTimeouts(callback: () => void, ms: number, endTimeCallback?: () => void) {
     const timeoutId = setTimeout(() => {
       callback()
-      this.endTimeouts(timeoutId)
+      this.endTimeouts(timeoutId, endTimeCallback)
     }, ms)
 
     this.timeoutIds.set(timeoutId, true)
   }
 
-  endTimeouts(id?: NodeJS.Timeout) {
+  endTimeouts(id?: NodeJS.Timeout, callback?: () => void) {
     if (id !== undefined) {
+      callback?.()
       clearTimeout(id)
       this.timeoutIds.delete(id)
       return

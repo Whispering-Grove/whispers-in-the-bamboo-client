@@ -1,7 +1,7 @@
 import * as S from './styles.ts'
 import { useChatStore } from '@features/chat/store/useChatStore.ts'
 import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
-import { API_PORT, API_URL } from '@shared/config/env.ts'
+import { API_URL } from '@shared/config/env.ts'
 
 export const Features = () => {
   const { chats } = useChatStore()
@@ -27,7 +27,7 @@ export const Features = () => {
             if (!confirm('정말 모든 사용자를 삭제하시겠습니까?')) return
 
             try {
-              const res = await fetch(`http://${API_URL}:${API_PORT}/clear-users`, {
+              const res = await fetch(`http://${API_URL}/clear-users`, {
                 method: 'POST',
               })
               const result = await res.json()

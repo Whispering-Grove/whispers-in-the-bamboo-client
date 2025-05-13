@@ -1,6 +1,8 @@
 import { createContext, PropsWithChildren, useContext, useRef, useState } from 'react'
 import { useChatStore } from '@features/chat/store/useChatStore.ts'
-import { API_PORT, API_URL } from '@shared/config/env.ts'
+import { API_URL } from '@shared/config/env.ts'
+import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
+import { User } from '@entities/user/model/types.ts'
 
 const WebSocketContext = createContext<ReturnType<typeof useSocketState> | undefined>(undefined)
 
@@ -12,13 +14,14 @@ export const WebSocketProvider = ({ children }: PropsWithChildren) => {
 
 const useSocketState = () => {
   const { setUsers, addChat } = useChatStore()
+  const { user: my, setUser } = useAuthStore()
   const socketRef = useRef<WebSocket | null>(null)
   const [isConnect, setConnect] = useState(false)
 
   const connect = (userId: string) => {
     if (socketRef.current) return
 
-    const socket = new WebSocket(`ws://${API_URL}:${API_PORT}?userId=${userId}`)
+    const socket = new WebSocket(`ws://${API_URL}?userId=${userId}`)
     socketRef.current = socket
 
     socket.onopen = () => {
@@ -29,7 +32,15 @@ const useSocketState = () => {
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
       if (data.type === 'update-positions') {
-        setUsers(data.payload)
+        const users = data.payload as User[]
+        setUsers(users)
+
+        const findMyData = users.find((user) => user.id === my?.id)
+        if (findMyData && findMyData.noChat) {
+          findMyData.position.x = 1300 - 450
+          setUser(findMyData)
+          sendMove(findMyData.id, 1300 - 450)
+        }
       }
 
       if (data.type === 'chat') {
@@ -47,8 +58,13 @@ const useSocketState = () => {
     socketRef.current?.send(JSON.stringify({ type: 'move', payload: { id: userId, x } }))
   }
 
-  const sendChat = (userId: string, message: string) => {
-    socketRef.current?.send(JSON.stringify({ type: 'chat', payload: { id: userId, message } }))
+  const sendChat = (userId: string, message: string, chatCount: number = 0) => {
+    socketRef.current?.send(
+      JSON.stringify({
+        type: 'chat',
+        payload: { id: userId, message, chatCount },
+      }),
+    )
   }
 
   return { socket: socketRef.current, connect, disconnect, sendMove, sendChat, isConnect }

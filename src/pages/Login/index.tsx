@@ -13,6 +13,8 @@ export const Login = () => {
       position: { x: Math.floor(Math.random() * (1200 - 100 + 1)) + 100 },
       hair: Math.floor(Math.random() * 13) + 1,
       dress: Math.floor(Math.random() * 13) + 1,
+      noChat: false,
+      chatCount: 0,
     }
 
     await login(user)
