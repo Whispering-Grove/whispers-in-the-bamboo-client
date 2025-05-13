@@ -18,6 +18,7 @@ export const Zone = () => {
   const [localMyX, setLocalMyX] = useState(-1)
   const [isChatting, setIsChatting] = useState(false)
   const [chatMessage, setChatMessage] = useState('')
+  const [dropAnimation, setDropAnimation] = useState(true)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -99,6 +100,9 @@ export const Zone = () => {
     if (localMyX === -1) {
       const me = users.filter((user) => user.id === myId)[0]
       setLocalMyX(me ? me.position.x : -1)
+      timer.startTimeouts(() => {
+        setDropAnimation(false)
+      }, 3000)
     }
   }, [users, isConnect])
 
@@ -123,7 +127,7 @@ export const Zone = () => {
           const message = chats[user.id]?.slice(-1)?.[0]
 
           return (
-            <S.Character isMe={isMe} x={x} key={user.id} noChat={user?.noChat}>
+            <S.Character isMe={isMe} x={x} key={user.id} noChat={user?.noChat} first={dropAnimation}>
               {!!message && <ChatBubble key={message.id} message={message.message} />}
               <img
                 src={hairImageUrl}
