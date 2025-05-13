@@ -5,21 +5,22 @@ const floatSmokeUp = keyframes`
   0% {
     opacity: 0;
     transform: translateX(-50%) translateY(10px) scale(0.9) rotate(0deg);
-    filter: blur(4px);
+    filter: blur(2px);
   }
-  40% {
-    opacity: 0.7;
-    transform: translateX(-50%) translateY(-10px) scale(1.05) rotate(-2deg);
-    filter: blur(1px);
+  25% {
+    transform: translateX(-52%) translateY(-5px) scale(1) rotate(-3deg);
   }
-  80% {
-    opacity: 0.7;
-    transform: translateX(-50%) translateY(-20px) scale(1.1) rotate(2deg);
+  50% {
+    opacity: 0.8;
+    transform: translateX(-48%) translateY(-15px) scale(1.05) rotate(3deg);
     filter: blur(0px);
+  }
+  75% {
+    transform: translateX(-51%) translateY(-30px) scale(1.1) rotate(-2deg);
   }
   100% {
     opacity: 0;
-    transform: translateX(-50%) translateY(-40px) scale(1.15) rotate(0deg);
+    transform: translateX(-50%) translateY(-45px) scale(1.15) rotate(0deg);
     filter: blur(1px);
   }
 `
@@ -52,7 +53,7 @@ export const CharSpan = styled.span<{
     isNew &&
     css`
       opacity: 0;
-      animation: ${floatSmokeUp} 1.2s ease-out forwards;
+      animation: ${floatSmokeUp} 2s ease-out forwards;
       animation-delay: ${delay}s;
     `}
 `
