@@ -1,6 +1,6 @@
 import { createContext, PropsWithChildren, useContext, useRef, useState } from 'react'
 import { useChatStore } from '@features/chat/store/useChatStore.ts'
-import { API_URL } from '@shared/config/env.ts'
+import { WS_URL } from '@shared/config/env.ts'
 import { useAuthStore } from '@features/auth/store/useAuthStore.ts'
 import { User } from '@entities/user/model/types.ts'
 
@@ -21,7 +21,7 @@ const useSocketState = () => {
   const connect = (userId: string) => {
     if (socketRef.current) return
 
-    const socket = new WebSocket(`ws://${API_URL}?userId=${userId}`)
+    const socket = new WebSocket(`${WS_URL}?userId=${userId}`)
     socketRef.current = socket
 
     socket.onopen = () => {

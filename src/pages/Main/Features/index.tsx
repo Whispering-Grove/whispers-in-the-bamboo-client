@@ -27,7 +27,7 @@ export const Features = () => {
             if (!confirm('정말 모든 사용자를 삭제하시겠습니까?')) return
 
             try {
-              const res = await fetch(`http://${API_URL}/clear-users`, {
+              const res = await fetch(`${API_URL}/clear-users`, {
                 method: 'POST',
               })
               const result = await res.json()

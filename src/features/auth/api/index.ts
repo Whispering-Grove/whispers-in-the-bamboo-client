@@ -2,7 +2,7 @@ import { User } from '@entities/user/model/types.ts'
 import { API_URL } from '@shared/config/env.ts'
 
 export const authUser = async (user: User) => {
-  const res = await fetch(`https://${API_URL}/login`, {
+  const res = await fetch(`${API_URL}/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -20,5 +20,5 @@ export const authUser = async (user: User) => {
 }
 
 export const removeUser = (userId: string) => {
-  navigator.sendBeacon(`https://${API_URL}/delete-user`, JSON.stringify({ userId }))
+  navigator.sendBeacon(`${API_URL}/delete-user`, JSON.stringify({ userId }))
 }
