@@ -53,7 +53,7 @@ export const CharSpan = styled.span<{
     isNew &&
     css`
       opacity: 0;
-      animation: ${floatSmokeUp} 2s ease-out forwards;
+      animation: ${floatSmokeUp} 3s ease-in-out forwards;
       animation-delay: ${delay}s;
     `}
 `
