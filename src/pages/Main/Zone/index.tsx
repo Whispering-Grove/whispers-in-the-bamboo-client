@@ -25,6 +25,7 @@ export const Zone = () => {
         e.preventDefault()
         if (noChat) {
           setIsChatting(false)
+          setChatMessage('')
           alert('도배하셔서 30초간 채팅 금지요~')
           return
         }
